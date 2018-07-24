@@ -17,7 +17,7 @@ class UmlClass:
         self.parents.append(fullyQualifiedClassName)
 
     def getId(self):
-        return "id" + str(hashlib.md5(self.fqn).hexdigest())
+        return "id" + str(hashlib.md5(self.fqn.encode('utf-8')).hexdigest())
 
 
 class DotGenerator:
@@ -121,13 +121,13 @@ class DotGenerator:
                       "  ]\n"
                       )
 
-        for key, value in self.classes.iteritems():
+        for key, value in self.classes.items():
             dotContent += self._genClass(value, self._showPubMembers, self._showProtMembers, self._showPrivMembers)
 
         # associations
         if self._drawAssociations:
             associations = ""
-            for key, aClass in self.classes.iteritems():
+            for key, aClass in self.classes.items():
                 associations += self._genAssociations(aClass)
 
             if associations != "":
@@ -137,7 +137,7 @@ class DotGenerator:
         # inheritances
         if self._drawInheritances:
             inheritances = ""
-            for key, aClass in self.classes.iteritems():
+            for key, aClass in self.classes.items():
                 inheritances += self._genInheritances(aClass)
 
             if inheritances != "":
