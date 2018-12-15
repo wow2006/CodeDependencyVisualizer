@@ -19,13 +19,16 @@ class UmlClass:
     def getId(self):
         return "id" + str(hashlib.md5(self.fqn.encode('utf-8')).hexdigest())
 
+    def __str__(self):
+        return str(self.fqn)
+
 
 class DotGenerator:
-    _showPrivMembers = False
-    _showProtMembers = False
-    _showPubMembers = False
+    _showPrivMembers  = True
+    _showProtMembers  = True
+    _showPubMembers   = True
     _drawAssociations = False
-    _drawInheritances = False
+    _drawInheritances = True
 
     def __init__(self):
         self.classes = {}
@@ -34,15 +37,21 @@ class DotGenerator:
         self.classes[aClass.fqn] = aClass
 
     def _genFields(self, accessPrefix, fields):
-        ret = "".join([(accessPrefix + fieldName + ": " + fieldType + "\l") for fieldName, fieldType in fields])
+        ret = "".join([(accessPrefix + fieldName + ": " + fieldType + "\l")
+                       for fieldName, fieldType in fields])
         return ret
 
     def _genMethods(self, accessPrefix, methods):
-        return "".join([(accessPrefix + methodName + methodArgs + " : " + returnType + "\l") for (returnType, methodName, methodArgs) in methods])
+        return "".join([(
+            accessPrefix + methodName + methodArgs + " : " + returnType + "\l")
+                        for (returnType, methodName, methodArgs) in methods])
 
-    def _genClass(self, aClass, withPublicMembers=False, withProtectedMembers=False, withPrivateMembers=False):
-        c = (aClass.getId()+" [ \n" +
-             "   label = \"{" + aClass.fqn)
+    def _genClass(self,
+                  aClass,
+                  withPublicMembers=False,
+                  withProtectedMembers=False,
+                  withPrivateMembers=False):
+        c = (aClass.getId() + " [ \n" + "   label = \"{" + aClass.fqn)
 
         if withPublicMembers:
             pubFields = self._genFields('+ ', aClass.publicFields)
@@ -81,7 +90,7 @@ class DotGenerator:
                 c = self.classes[fieldType]
                 edges.add(aClass.getId() + "->" + c.getId())
         edgesJoined = "\n".join(edges)
-        return edgesJoined+"\n" if edgesJoined != "" else ""
+        return edgesJoined + "\n" if edgesJoined != "" else ""
 
     def _genInheritances(self, aClass):
         edges = ""
@@ -107,22 +116,18 @@ class DotGenerator:
         self._showPubMembers = enable
 
     def generate(self):
-        dotContent = ("digraph dependencies {\n" +
-                      "  fontname = \"Bitstream Vera Sans\"\n" +
-                      "  fontsize = 8" +
-                      "  node [" +
-                      "    fontname = \"Bitstream Vera Sans\"\n" +
-                      "    fontsize = 8\n" +
-                      "    shape = \"record\"\n" +
-                      "  ]\n" +
-                      "  edge [\n" +
-                      "    fontname = \"Bitstream Vera Sans\"\n" +
-                      "    fontsize = 8\n" +
-                      "  ]\n"
-                      )
+        dotContent = (
+            "digraph dependencies {\n" +
+            "  fontname = \"Bitstream Vera Sans\"\n" + "  fontsize = 8" +
+            "  node [" + "    fontname = \"Bitstream Vera Sans\"\n" +
+            "    fontsize = 8\n" + "    shape = \"record\"\n" + "  ]\n" +
+            "  edge [\n" + "    fontname = \"Bitstream Vera Sans\"\n" +
+            "    fontsize = 8\n" + "  ]\n")
 
         for key, value in self.classes.items():
-            dotContent += self._genClass(value, self._showPubMembers, self._showProtMembers, self._showPrivMembers)
+            dotContent += self._genClass(value, self._showPubMembers,
+                                         self._showProtMembers,
+                                         self._showPrivMembers)
 
         # associations
         if self._drawAssociations:
