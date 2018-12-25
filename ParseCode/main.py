@@ -2,6 +2,7 @@ import json
 import clang.cindex
 
 from DotGenerator import *
+from ParseSourceCode import *
 
 
 def splitCommand(command):
@@ -144,11 +145,10 @@ if __name__ == "__main__":
     json_name = "compile_commands.json"
 
     with open(json_name, "r") as json_file:
-        json_data = json.load(json_file)
+        json_data = ParseSourceCode(json_file)
 
-    include_list = splitCommand(json_data[0]["command"])
-
-    parseTranslationUnit(json_data[0]["file"],
-                         include_list,
-                         "")
+    for file_name in json_data:
+        parseTranslationUnit(file_name,
+                             json_data[file_name],
+                             "")
 
