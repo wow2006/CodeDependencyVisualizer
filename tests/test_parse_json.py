@@ -1,27 +1,13 @@
-import unittest
+import io
+from unittest import TestCase, main
 from context import ParseSourceCode
 from json.decoder import JSONDecodeError
 
 
-class ParseJSON(unittest.TestCase):
-    def test_file_exists(self):
-        json_file_directory = "/not/exist.json"
-
-        try:
-            parser = ParseSourceCode(json=json_file_directory)
-        except FileNotFoundError as e:
-            self.assertTrue(True)
-        except Exception as e:
-           self.fail('Unexpected exception raised:', e)
-        else:
-           self.fail('ExpectedException not raised')
-
+class ParseJSON(TestCase):
     def test_file_empty(self):
-        empty_file = "/tmp/empty.json"
-        with open(empty_file, "w") as f:
-            f.write("")
-
         try:
+            empty_file = io.StringIO("")
             parser = ParseSourceCode(json=empty_file)
         except JSONDecodeError as e:
             self.assertTrue(True)
@@ -36,12 +22,9 @@ class ParseJSON(unittest.TestCase):
         test_command_dir  = "/tmp"
         test_command      = "/usr/bin/clang++ %s" % test_command_file
 
-        test_string = '[{"directory": "%s","command": "%s","file": "%s"}]' % (test_command_dir, test_command, test_command_file)
+        test_string = io.StringIO('[{"directory": "%s","command": "%s","file": "%s"}]' % (test_command_dir, test_command, test_command_file))
 
-        with open(test_file, "w") as f:
-            f.write(test_string)
-
-        commands = ParseSourceCode(json=test_file)
+        commands = ParseSourceCode(json=test_string)
 
         self.assertEqual(type(commands), dict)
         self.assertEqual(len(commands), 1)
@@ -50,5 +33,5 @@ class ParseJSON(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
 
