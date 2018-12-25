@@ -70,10 +70,34 @@ class ParseJSON(TestCase):
         self.assertTrue(len(command) == 0)
 
     def test_parse_include_command(self):
-        test_command = "/usr/bin/clang++ -I/usr/include test.cpp"
+        test_include = "-I/usr/include"
+        test_command = "/usr/bin/clang++ %s test.cpp" % test_include
 
         command = ParseCommand(test_command)
         self.assertTrue(len(command) == 1)
+        self.assertIn(test_include, test_command)
+
+    def test_parse_include_two_command(self):
+        test_include = ["-I/usr/include",
+                        "-I/usr/local/include"]
+                        
+        test_command = "/usr/bin/clang++ %s %s test.cpp" % (test_include[0], test_include[1])
+
+        command = ParseCommand(test_command)
+        self.assertTrue(len(command) == 2)
+        for test_ in test_include:
+            self.assertIn(test_, test_command)
+
+    def test_parse_include_two_system_command(self):
+        test_include = ["-isystem /usr/include",
+                        "-isystem /usr/local/include"]
+
+        test_command = "/usr/bin/clang++ %s %s test.cpp" % (test_include[0], test_include[1])
+
+        command = ParseCommand(test_command)
+        self.assertTrue(len(command) == 2)
+        for test_ in test_include:
+            self.assertIn(test_, test_command)
 
 if __name__ == '__main__':
     main()
