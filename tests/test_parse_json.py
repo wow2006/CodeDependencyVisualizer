@@ -1,6 +1,6 @@
 import io
 from unittest import TestCase, main
-from context import ParseSourceCode
+from context import ParseSourceCode, ParseCommand
 from json.decoder import JSONDecodeError
 
 
@@ -38,12 +38,12 @@ class ParseJSON(TestCase):
                                 "/usr/bin/clang++ %s" % test_command_file[1]]
 
         test_full_string = """
-[
-{"directory": "%s","command": "%s","file": "%s"},
-{"directory": "%s","command": "%s","file": "%s"}
-]
-""" % (test_command_dir, test_command[0], test_command_file[0],
-       test_command_dir, test_command[1], test_command_file[1])
+        [
+        {"directory": "%s","command": "%s","file": "%s"},
+        {"directory": "%s","command": "%s","file": "%s"}
+        ]
+        """ % (test_command_dir, test_command[0], test_command_file[0],
+           test_command_dir, test_command[1], test_command_file[1])
 
         test_string = io.StringIO(test_full_string)
 
@@ -57,6 +57,23 @@ class ParseJSON(TestCase):
             self.assertEqual(test_file, true_file)
             self.assertEqual(commands[test_file], test_command[index])
 
+    def test_parse_empty_command(self):
+        test_command = ""
+
+        command = ParseCommand(test_command)
+        self.assertTrue(len(command) == 0)
+
+    def test_parse_simple_command(self):
+        test_command = "/usr/bin/clang++ test.cpp"
+
+        command = ParseCommand(test_command)
+        self.assertTrue(len(command) == 0)
+
+    def test_parse_include_command(self):
+        test_command = "/usr/bin/clang++ -I/usr/include test.cpp"
+
+        command = ParseCommand(test_command)
+        self.assertTrue(len(command) == 1)
 
 if __name__ == '__main__':
     main()
