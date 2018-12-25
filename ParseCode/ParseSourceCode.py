@@ -21,7 +21,7 @@ def ParseSourceCode(json):
         key   = item["file"]
         value = item["command"]
 
-        commands[key] = value
+        commands[key] = ParseCommand(value)
 
     return commands
 

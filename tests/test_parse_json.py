@@ -20,7 +20,8 @@ class ParseJSON(TestCase):
         test_file         = "/tmp/test_file.json"
         test_command_file = "FullSystem.cpp"
         test_command_dir  = "/tmp"
-        test_command      = "/usr/bin/clang++ %s" % test_command_file
+        test_include      = "-I/usr/include"
+        test_command      = "/usr/bin/clang++ %s %s" % (test_include, test_command_file)
 
         test_string = io.StringIO('[{"directory": "%s","command": "%s","file": "%s"}]' % (test_command_dir, test_command, test_command_file))
 
@@ -29,7 +30,7 @@ class ParseJSON(TestCase):
         self.assertEqual(type(commands), dict)
         self.assertEqual(len(commands), 1)
         self.assertIn(test_command_file, commands)
-        self.assertEqual(test_command, commands[test_command_file])
+        self.assertIn(test_include, commands[test_command_file])
 
     def test_parse_two_files(self):
         test_command_file = ["1.cpp", "2.cpp"]
@@ -55,7 +56,7 @@ class ParseJSON(TestCase):
         keys = list(commands.keys())
         for index, (test_file, true_file) in enumerate(zip(keys, test_command_file)):
             self.assertEqual(test_file, true_file)
-            self.assertEqual(commands[test_file], test_command[index])
+            self.assertEqual(commands[test_file], [])
 
     def test_parse_empty_command(self):
         test_command = ""
