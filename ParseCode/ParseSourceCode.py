@@ -1,4 +1,5 @@
 from json import load
+import clang.cindex
 
 
 def ParseCommand(command):
@@ -26,5 +27,14 @@ def ParseSourceCode(json):
     return commands
 
 def CreateAST(file_info):
-    pass
+    index = clang.cindex.Index.create()
+    for key in file_info:
+        tu = index.parse(key, args=file_info[key],
+                         options=clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+    
+    if not tu:
+        raise Exception("ExpectedException not raised")
+
+    return tu
+
 
