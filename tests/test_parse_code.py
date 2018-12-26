@@ -24,8 +24,11 @@ class ParseCode(TestCase):
         with open(test_file_name, "w") as f:
             f.write(test_file_str)
 
-        CreateAST(test_file_info)
-        self.assertTrue(True)
+        tu = CreateAST(test_file_info)
+        self.assertTrue(test_file_name == tu.spelling)
+        children = list(tu.cursor.get_children())
+        self.assertTrue(len(children) == 1)
+
         os.remove(test_file_name)
 
 

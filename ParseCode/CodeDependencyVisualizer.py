@@ -20,7 +20,7 @@ def splitCommand(command):
     includes_list = [x for x in args if "-I" in x]
 
     indecies = [(i, i + 1) for i, x in enumerate(args)
-                if "-isystem" in x]
+            if "-isystem" in x]
 
     for x, y in indecies:
         includes_list.append(args[y])
@@ -90,31 +90,31 @@ def processClassMemberDeclaration(umlClass, cursor):
             returnType, argumentTypes = cursor.type.spelling.split(' ', 1)
             if cursor.access_specifier == clang.cindex.AccessSpecifier.PUBLIC:
                 umlClass.publicMethods.append((returnType, cursor.spelling,
-                                               argumentTypes))
+                    argumentTypes))
             elif cursor.access_specifier == clang.cindex.AccessSpecifier.PRIVATE:
                 umlClass.privateMethods.append((returnType, cursor.spelling,
-                                                argumentTypes))
+                    argumentTypes))
             elif cursor.access_specifier == clang.cindex.AccessSpecifier.PROTECTED:
                 umlClass.protectedMethods.append((returnType, cursor.spelling,
-                                                  argumentTypes))
+                    argumentTypes))
         except:
             logging.error("Invalid CXX_METHOD declaration! " +
-                          str(cursor.type.spelling))
+                    str(cursor.type.spelling))
     elif cursor.kind == clang.cindex.CursorKind.FUNCTION_TEMPLATE:
         returnType, argumentTypes = cursor.type.spelling.split(' ', 1)
         if cursor.access_specifier == clang.cindex.AccessSpecifier.PUBLIC:
             umlClass.publicMethods.append((returnType, cursor.spelling,
-                                           argumentTypes))
+                argumentTypes))
         elif cursor.access_specifier == clang.cindex.AccessSpecifier.PRIVATE:
             umlClass.privateMethods.append((returnType, cursor.spelling,
-                                            argumentTypes))
+                argumentTypes))
         elif cursor.access_specifier == clang.cindex.AccessSpecifier.PROTECTED:
             umlClass.protectedMethods.append((returnType, cursor.spelling,
-                                              argumentTypes))
+                argumentTypes))
 
 
-def processClass(cursor, inclusionConfig):
-    """ Processes an ast node that is a class. """
+            def processClass(cursor, inclusionConfig):
+                """ Processes an ast node that is a class. """
     # umlClass is the datastructure for the DotGenerator
     umlClass = UmlClass()
 
@@ -134,11 +134,11 @@ def processClass(cursor, inclusionConfig):
 
     import re
     if (inclusionConfig['excludeClasses'] and
-        re.match(inclusionConfig['excludeClasses'], umlClass.fqn)):
+            re.match(inclusionConfig['excludeClasses'], umlClass.fqn)):
         return
 
     if (inclusionConfig['includeClasses'] and not
-        re.match(inclusionConfig['includeClasses'], umlClass.fqn)):
+            re.match(inclusionConfig['includeClasses'], umlClass.fqn)):
         return
 
     logging.debug("Before children")
@@ -152,8 +152,8 @@ def processClass(cursor, inclusionConfig):
 
 def traverseAst(cursor, inclusionConfig):
     if (cursor.kind == clang.cindex.CursorKind.CLASS_DECL or
-        cursor.kind == clang.cindex.CursorKind.STRUCT_DECL or
-        cursor.kind == clang.cindex.CursorKind.CLASS_TEMPLATE):
+            cursor.kind == clang.cindex.CursorKind.STRUCT_DECL or
+            cursor.kind == clang.cindex.CursorKind.CLASS_TEMPLATE):
         # if the current cursor is a class, class template or struct declaration,
         # we process it further ...
         processClass(cursor, inclusionConfig)
@@ -169,9 +169,9 @@ def parseTranslationUnit(filePath, includeDirs, inclusionConfig):
     clangArgs = ['-x', 'c++'] + ['-I' + includeDir for includeDir in includeDirs]
 
     tu = index.parse(
-        filePath,
-        args=clangArgs,
-        options=clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
+            filePath,
+            args=clangArgs,
+            options=clang.cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES)
 
     for diagnostic in tu.diagnostics:
         logging.debug(diagnostic)
@@ -182,56 +182,56 @@ def parseTranslationUnit(filePath, includeDirs, inclusionConfig):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="CodeDependencyVisualizer (CDV)")
+            description="CodeDependencyVisualizer (CDV)")
     parser.add_argument(
-        '-d',
-        required=True,
-        help="directory with source files to parse (searches recusively)")
+            '-d',
+            required=True,
+            help="directory with source files to parse (searches recusively)")
     parser.add_argument(
-        '-o',
-        '--outFile',
-        default='uml.dot',
-        help="output file name / name of generated dot file")
+            '-o',
+            '--outFile',
+            default='uml.dot',
+            help="output file name / name of generated dot file")
     parser.add_argument(
-        '-u', '--withUnusedHeaders', help="parse unused header files (slow)")
+            '-u', '--withUnusedHeaders', help="parse unused header files (slow)")
     parser.add_argument(
-        '-a',
-        '--associations',
-        action="store_true",
-        help="draw class member assiciations")
+            '-a',
+            '--associations',
+            action="store_true",
+            help="draw class member assiciations")
     parser.add_argument(
-        '-i',
-        '--inheritances',
-        action="store_true",
-        help="draw class inheritances")
+            '-i',
+            '--inheritances',
+            action="store_true",
+            help="draw class inheritances")
     parser.add_argument(
-        '-p',
-        '--privMembers',
-        action="store_true",
-        help="show private members")
+            '-p',
+            '--privMembers',
+            action="store_true",
+            help="show private members")
     parser.add_argument(
-        '-t',
-        '--protMembers',
-        action="store_true",
-        help="show protected members")
+            '-t',
+            '--protMembers',
+            action="store_true",
+            help="show protected members")
     parser.add_argument(
-        '-P', '--pubMembers', action="store_true", help="show public members")
+            '-P', '--pubMembers', action="store_true", help="show public members")
     parser.add_argument(
-        '-I',
-        '--includeDirs',
-        help="additional search path(s) for include files (seperated by space)",
-        nargs='+')
+            '-I',
+            '--includeDirs',
+            help="additional search path(s) for include files (seperated by space)",
+            nargs='+')
     parser.add_argument(
-        '-v',
-        '--verbose',
-        action="store_true",
-        help="print verbose information for debugging purposes")
+            '-v',
+            '--verbose',
+            action="store_true",
+            help="print verbose information for debugging purposes")
     parser.add_argument(
-        '--excludeClasses',
-        help="classes matching this pattern will be excluded")
+            '--excludeClasses',
+            help="classes matching this pattern will be excluded")
     parser.add_argument(
-        '--includeClasses',
-        help="only classes matching this pattern will be included")
+            '--includeClasses',
+            help="only classes matching this pattern will be included")
 
     args = vars(parser.parse_args(sys.argv[1:]))
     jsonPath = os.path.join(args['d'], "compile_commands.json")
@@ -248,10 +248,10 @@ if __name__ == "__main__":
             logging.info("parsing file " + sourceFile)
 
             parseTranslationUnit(sourceFile,
-                include_list, {
-                    'excludeClasses': args['excludeClasses'],
-                    'includeClasses': args['includeClasses']
-                })
+                    include_list, {
+                        'excludeClasses': args['excludeClasses'],
+                        'includeClasses': args['includeClasses']
+                        })
     else:
         filesToParsePatterns = ['*.cpp', '*.cxx', '*.c', '*.cc']
         if args['withUnusedHeaders']:
@@ -269,12 +269,12 @@ if __name__ == "__main__":
         for sourceFile in filesToParse:
             logging.info("parsing file " + sourceFile)
             parseTranslationUnit(
-                sourceFile, args['includeDirs'], {
-                    'excludeClasses': args['excludeClasses'],
-                    'includeClasses': args['includeClasses']
-                })
+                    sourceFile, args['includeDirs'], {
+                        'excludeClasses': args['excludeClasses'],
+                        'includeClasses': args['includeClasses']
+                        })
 
-    dotGenerator.setDrawAssociations(args['associations'])
+                    dotGenerator.setDrawAssociations(args['associations'])
     dotGenerator.setDrawInheritances(args['inheritances'])
     dotGenerator.setShowPrivMethods(args['privMembers'])
     dotGenerator.setShowProtMethods(args['protMembers'])

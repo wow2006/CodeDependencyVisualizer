@@ -37,4 +37,6 @@ def CreateAST(file_info):
 
     return tu
 
+def TraverseAST(TransUnit):
+    pass
 
