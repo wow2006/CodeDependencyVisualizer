@@ -40,3 +40,6 @@ def CreateAST(file_info):
 def TraverseAST(TransUnit):
     pass
 
+def printClass(trans_unit, class_name):
+    pass
+
